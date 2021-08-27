@@ -25,6 +25,7 @@
     "lodash": "^4.17.21",
     "react": "17.0.1",
     "react-native": "0.64.1",
+    "react-native-camera": "^4.1.0",
     "react-native-dropdownalert": "^4.3.0",
     "react-native-dropdownalert-click": "^0.0.3",
     "react-native-fs": "^2.18.0",

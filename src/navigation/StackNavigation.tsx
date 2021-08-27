@@ -7,6 +7,7 @@ import { IProduct } from '../interfaces/product';
 import { Comparizy } from '../screens/HomeScreen';
 import { ProductDetail } from '../screens/ProductDetail';
 import { ProductNotificationScreen } from '../screens/ProductNotificationScreen';
+import  PictureScreen from "../screens/PictureScreen"
 
 
 export type StackNavigationProps = {
@@ -65,6 +66,8 @@ export const StackNavigation: React.FC<StackNavigationProps> = ({}) => {
         }}
         component={Comparizy}
       />
+
+      <Stack.Screen name='PictureScreen'component={PictureScreen}></Stack.Screen>
       <Stack.Screen name="ProductDetail" component={ProductDetail} />
       <Stack.Screen name="ProductNotificationScreen" component={ProductNotificationScreen} />
     </Stack.Navigator>
