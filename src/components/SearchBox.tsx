@@ -28,7 +28,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({onPress}) => {
   const handlePressPicture = () =>{
     console.log('Go to picture ');
     navigation.navigate('PictureScreen');
-}
+  }
 
   return (
     <View style={styles.containerStyle}>

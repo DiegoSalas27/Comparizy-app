@@ -2,7 +2,16 @@ import React from 'react';
 import {View, TouchableOpacity, StyleSheet, Text} from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import PendingView from './PendingView';
+import { useNavigation } from '@react-navigation/native';
 
+
+
+import * as mobilenet from '@tensorflow-models/mobilenet'
+import * as jpeg from 'jpeg-js'
+
+
+
+const navigation = useNavigation(); 
 
 class PictureScreen extends React.Component{
 
@@ -54,6 +63,8 @@ class PictureScreen extends React.Component{
       </View>
     );
   }
+
+  
   takePicture = async function(camera) {
     const options = { quality: 0.5, base64: true };
     const data = await camera.takePictureAsync(options);
@@ -69,6 +80,9 @@ class PictureScreen extends React.Component{
   resumePicture = async function(camera){
     await camera.resumePreview()    
     this.setState({pausePreview:false})
+
+    console.log('Going back to menu...');
+    navigation.navigate('HomeScreenWithSearch');
   }
 }
 
@@ -96,3 +110,4 @@ const styles = StyleSheet.create({
 });
 
 export default PictureScreen;
+
