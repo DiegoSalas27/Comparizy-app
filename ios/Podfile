@@ -22,6 +22,20 @@ target 'comparizy' do
 
   pod 'react-native-fbsdk-next', :path => '../node_modules/react-native-fbsdk-next'
 
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
+  pod 'RNSnackbar', :path => '../node_modules/react-native-snackbar'
+
+  pod 'RNShare', :path => '../node_modules/react-native-share'
+
+  pod 'RNScreens', :path => '../node_modules/react-native-screens'
+
+  pod 'react-native-safe-area-context', :path => '../node_modules/react-native-safe-area-context'
+
+  pod 'react-native-camera', :path => '../node_modules/react-native-camera'
+
+  pod 'react-native-simple-toast', :path => '../node_modules/react-native-simple-toast'
+
   target 'comparizyTests' do
     inherit! :complete
     # Pods for testing

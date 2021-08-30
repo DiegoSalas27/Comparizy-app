@@ -67,33 +67,6 @@ export const StackNavigation: React.FC<StackNavigationProps> = ({}) => {
         component={Comparizy}
       />
 
-      <Stack.Screen
-        name='HomeScreenWithSearch'
-        options={{
-          headerRightContainerStyle: {marginRight: 15},
-          headerRight: () =>
-            !authState.isLoggedIn ? (
-              <ButtonDebounce onPress={signIn} title="Iniciar sesión" color="#0096FF"></ButtonDebounce>
-             ) : (<ButtonDebounce onPress={logout} title="Cerrar sesión" color="#0096FF"></ButtonDebounce>),
-          headerLeftContainerStyle: {marginLeft: 15},
-          headerLeft: () => {
-            return authState.userImage ? (
-              <Image
-                source={{uri: authState.userImage}}
-                style={styles.userIcon}
-              />
-            ) : (
-              <Image
-                source={require('../images/user.png')}
-                style={styles.userIcon}
-              />
-            );
-          },
-        }}
-        component={PictureScreen}
-
-      />
-      
       <Stack.Screen name='PictureScreen'component={PictureScreen}></Stack.Screen>
       <Stack.Screen name="ProductDetail" component={ProductDetail} />
       <Stack.Screen name="ProductNotificationScreen" component={ProductNotificationScreen} />

@@ -1,16 +1,22 @@
 package com.comparizy;
 
+import com.rnfs.RNFSPackage;
+import java.util.Arrays;
+import com.facebook.react.shell.MainReactPackage;
 import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.RNFetchBlob.RNFetchBlobPackage;
+import org.reactnative.camera.RNCameraPackage;
+import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
+import com.swmansion.rnscreens.RNScreensPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
+import cl.json.RNSharePackage;
+import com.azendoo.reactnativesnackbar.SnackbarPackage;
+import co.apptailor.googlesignin.RNGoogleSigninPackage;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
-import com.RNFetchBlob.RNFetchBlobPackage;
-import com.RNFetchBlob.RNFetchBlobPackage;
-import com.RNFetchBlob.RNFetchBlobPackage;
-import com.rnfs.RNFSPackage;
 import com.horcrux.svg.SvgPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
@@ -30,12 +36,19 @@ public class MainApplication extends Application implements ReactApplication {
 
         @Override
         protected List<ReactPackage> getPackages() {
-          @SuppressWarnings("UnnecessaryLocalVariable")
-          List<ReactPackage> packages = new PackageList(this).getPackages();
-          // Packages that cannot be autolinked yet can be added manually here, for example:
-          // packages.add(new MyReactNativePackage());
-          return packages;
-        }
+          return Arrays.<ReactPackage>asList(
+            new MainReactPackage(),
+            new RNFetchBlobPackage(),
+            new RNCameraPackage(),
+            new SafeAreaContextPackage(),
+            new RNScreensPackage(),
+            new RNSharePackage(),
+            new SnackbarPackage(),
+            new RNGoogleSigninPackage(),
+            new RNGestureHandlerPackage(),
+            new RNFSPackage() // <---------- add package
+          );
+    }
 
         @Override
         protected String getJSMainModuleName() {
