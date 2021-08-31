@@ -5,52 +5,34 @@ import PendingView from './PendingView';
 import {useNavigation} from '@react-navigation/native';
 // import * as FileSystem from 'expo-file-system'
 
-//import * as tf from '@tensorflow/tfjs';
 import * as tfc from '@tensorflow/tfjs-core';
-
 import * as mobilenet from '@tensorflow-models/mobilenet';
+
+import * as tf from '@tensorflow/tfjs';
+import '@tensorflow/tfjs-react-native';
+// import '@tensorflow/tfjs-backend-cpu';
+// import '@tensorflow/tfjs-backend-webgl';
+
 import * as jpeg from 'jpeg-js';
 import RNFS from 'react-native-fs';
 import Toast from 'react-native-simple-toast';
 
 import RNFetchBlob from "rn-fetch-blob";
 
+global.atob = require("atob");
+//global.Blob = require('node-blob');
+
+function _base64ToArrayBuffer(base64) {
+  var binary_string = global.atob(base64);
+  var len = binary_string.length;
+  var bytes = new Uint8Array(len);
+  for (var i = 0; i < len; i++) {
+      bytes[i] = binary_string.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
 
 //const navigation = useNavigation();
-
-function decode_base64(s)
-{
-    var e = {}, i, k, v = [], r = '', w = String.fromCharCode;
-    var n = [[65, 91], [97, 123], [48, 58], [43, 44], [47, 48]];
-
-    for (z in n)
-    {
-        for (i = n[z][0]; i < n[z][1]; i++)
-        {
-            v.push(w(i));
-        }
-    }
-    for (i = 0; i < 64; i++)
-    {
-        e[v[i]] = i;
-    }
-
-    for (i = 0; i < s.length; i+=72)
-    {
-        var b = 0, c, x, l = 0, o = s.substring(i, i+72);
-        for (x = 0; x < o.length; x++)
-        {
-            c = e[o.charAt(x)];
-            b = (b << 6) + c;
-            l += 6;
-            while (l >= 8)
-            {
-                r += w((b >>> (l -= 8)) &0xff);
-            }
-         }
-    }
-    return r;
-}
 
 class PictureScreen extends React.Component {
   state = {
@@ -62,13 +44,19 @@ class PictureScreen extends React.Component {
   };
 
   async componentDidMount() {
+    try {
     // await tf.ready();
-    await tfc.ready();
-    this.setState({
-      isTfReady: true,
-    });
+    await tf.ready();
+    // this.setState({
+    //   isTfReady: true,
+    // });
+    console.log('arroz');
     this.model = await mobilenet.load();
     this.setState({isModelReady: true});
+    } catch (error) {
+      Toast.show(`${error}`, Toast.LONG);
+      console.log(error);
+    }
   }
 
   imageToTensor(rawImageData) {
@@ -84,7 +72,7 @@ class PictureScreen extends React.Component {
 
       offset += 4;
     }
-    return tfc.tensor3d(buffer, [height, width, 3]);
+    return tf.tensor3d(buffer, [height, width, 3]);
   }
 
   classifyImage = async () => {
@@ -105,8 +93,10 @@ class PictureScreen extends React.Component {
       //   console.log(predictions);
       // });
 
-      // const imgBuffer = tfc.util.encodeString(imgB64, 'base64').buffer;
-      const imgBuffer = decode_base64(imgB64);
+      //const imgBuffer = tfc.util.encodeString(imgB64, 'base64').buffer;
+      const imgBuffer = _base64ToArrayBuffer(imgB64);
+      //const imgBuffer = Buffer.from(imgB64);
+
       const imageTensor = this.imageToTensor(imgBuffer);
       const predictions = await this.model.classify(imageTensor)
       this.setState({ predictions })
@@ -178,29 +168,25 @@ class PictureScreen extends React.Component {
     const source = data.uri;
 
     // ~~~~~~~~
-    const fs = RNFetchBlob.fs;
+    // const fs = RNFetchBlob.fs;
 
-    RNFetchBlob.config({
-      fileCache: true
-    }).fetch("GET", "https://www.carlroth.com/medias/CT41-1000Wx1000H?context=bWFzdGVyfGltYWdlc3w4MzIwMnxpbWFnZS9qcGVnfGltYWdlcy9oNjQvaGQ0Lzg4MjU2NTUyNjMyNjIuanBnfDNjOTJkZWVkMjY0NzNkNTcwM2UwZmZmYzI5NmM3ZTBjOWQ3NWE3NmE2YTIwNTRkMDZmNTg5OGJmMjFjNmFkMTM")
-    // the image is now dowloaded to device's storage
-    .then(resp => {
-    // the image path you can use it directly with Image component
-      imagePath = resp.path();
-      this.setState({ image: imagePath })
-      return imagePath;
-
-      
-    });
+    // RNFetchBlob.config({
+    //   fileCache: true
+    // }).fetch("GET", "https://www.carlroth.com/medias/CT41-1000Wx1000H?context=bWFzdGVyfGltYWdlc3w4MzIwMnxpbWFnZS9qcGVnfGltYWdlcy9oNjQvaGQ0Lzg4MjU2NTUyNjMyNjIuanBnfDNjOTJkZWVkMjY0NzNkNTcwM2UwZmZmYzI5NmM3ZTBjOWQ3NWE3NmE2YTIwNTRkMDZmNTg5OGJmMjFjNmFkMTM")
+    // .then(resp => {
+    //   imagePath = resp.path();
+    //   this.setState({ image: imagePath })
+    //   this.classifyImage().then(() => {
+    //     fs.unlink(imagePath)
+    //   });
+    // });
 
     //~~~~~~~~~
 
 
-    // this.setState({ image: source })
+    this.setState({ image: source })
+    this.classifyImage();
     
-    this.classifyImage().then(() => {
-      fs.unlink(path)
-    });
 
     if (source) {
       await camera.pausePreview();
