@@ -1,15 +1,18 @@
-import React from 'react';
+
 import {View, TouchableOpacity, StyleSheet, Text} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import PendingView from './PendingView';
+import React, {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
+//import {UPLOAD_PROGRESS_HEADER} from './Constants';
+
 // import * as FileSystem from 'expo-file-system'
 
-import * as tfc from '@tensorflow/tfjs-core';
-import * as mobilenet from '@tensorflow-models/mobilenet';
+//import * as tfc from '@tensorflow/tfjs-core';
+//import * as mobilenet from '@tensorflow-models/mobilenet';
 
-import * as tf from '@tensorflow/tfjs';
-import '@tensorflow/tfjs-react-native';
+//import * as tf from '@tensorflow/tfjs';
+//import '@tensorflow/tfjs-react-native';
 // import '@tensorflow/tfjs-backend-cpu';
 // import '@tensorflow/tfjs-backend-webgl';
 
@@ -19,8 +22,91 @@ import Toast from 'react-native-simple-toast';
 
 import RNFetchBlob from "rn-fetch-blob";
 
+//const [uploadProgress, setUploadProgress] = useState(0);
+//const [response, setResponse] = useState('You should see your response here');
+let photoUri ='';
+let ImageUri ='';
+let APIurl='https://inceptionv2api.herokuapp.com/predict/image?filename=%20https%3A%2F%2Fi.imgur.com%2F'
+let url='';
+
+
 global.atob = require("atob");
 //global.Blob = require('node-blob');
+
+
+//https://i.imgur.com/ZlP297u.jpeg
+_postData =async() => {
+  var formBody = [];
+    //POST request
+    fetch(APIurl+ImageUri, {
+      method: 'POST', //Request Type
+      body: formBody, //post body
+      headers: {
+        //Header Defination
+        'Content-Type': 
+          'application/x-www-form-urlencoded;charset=UTF-8',
+      },
+    })
+      .then((response) => response.json())
+      //If response is in json then in success
+      .then((responseJson) => {
+        alert(JSON.stringify(responseJson));
+        console.log("GOOO")
+        console.log(responseJson);
+      })
+      //If response is not in json then in error
+      .catch((error) => {
+        alert(JSON.stringify(error));
+        console.error(error);
+      });
+  };
+
+
+
+
+
+/*.then((response)=>response.json())
+  .then((responseJson=>{this.setState(text: JSON.stringify(responseJson)))})
+    
+  
+*/
+
+
+const onClickUpload = () => {
+  const xhr = new XMLHttpRequest();
+  const formData = new FormData();
+  console.log("ENTRO :")
+  formData.append('image', {
+    uri: photoUri,
+    type: 'image/jpeg',
+    name: 'photo.jpg',
+  });
+  xhr.upload.addEventListener('progress', handleProgress);
+  xhr.addEventListener('load', () => {
+   // setUploadProgress(100);Ñ
+   // setResponse(xhr.response);
+    console.log("El response es :")
+    console.log(xhr.response)
+    var result = JSON.parse(xhr.response);
+    console.log("EL LINK ES :")
+    console.log(result.data.link);
+    ImageUri=result.data.link;
+    url=ImageUri.substring(20)
+    console.log(url);
+    ImageUri=url;
+    console.log(APIurl+ImageUri)
+// now you can access it's params:
+    _postData();
+  });
+  xhr.open('POST', 'https://api.imgur.com/3/upload');
+  xhr.setRequestHeader('Authorization', 'MIIDD');
+  xhr.send(formData);
+};
+const handleProgress = event => {
+ // setUploadProgress(Math.round((event.loaded * 100) / event.total));
+  console.log(Math.round((event.loaded * 100) / event.total));
+};
+
 
 function _base64ToArrayBuffer(base64) {
   var binary_string = global.atob(base64);
@@ -163,10 +249,16 @@ class PictureScreen extends React.Component {
   takePicture = async function (camera) {
     const options = {quality: 0.5, base64: true};
     const data = await camera.takePictureAsync(options);
-    //  eslint-disable-next-line
+    //  eslint-disable-next-lineA
     
     const source = data.uri;
-
+    photoUri=source;
+    console.log("AVANZO :");
+    onClickUpload();
+    
+ //   
+   // console.log("ES UN :");
+   // console.log(Clasf.data);
     // ~~~~~~~~
     // const fs = RNFetchBlob.fs;
 
@@ -225,5 +317,5 @@ const styles = StyleSheet.create({
     margin: 20,
   },
 });
-
+//
 export default PictureScreen;
