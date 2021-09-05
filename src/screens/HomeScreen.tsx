@@ -3,15 +3,13 @@ import {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
-  Button,
   Dimensions,
   Image,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Slider from 'rn-range-slider';
@@ -28,8 +26,8 @@ import {useFilteredProducts} from '../hooks/useFilteredProducts';
 import {useFilteredProductsByCategory} from '../hooks/useFilteredProductsByCategory';
 import {useProducts} from '../hooks/useProducts';
 import {StackNavigationProps} from '../navigation/StackNavigation';
-import { AuthContext } from '../context/AuthContext';
-import { validateShowNotificationSnackBar } from '../api/productService';
+import {AuthContext} from '../context/AuthContext';
+import {validateShowNotificationSnackBar} from '../api/productService';
 
 const screenHeight = Dimensions.get('screen').height;
 const screenWidth = Dimensions.get('screen').width;
@@ -40,6 +38,10 @@ interface ComparizyProps
 export const Comparizy: React.FC<ComparizyProps> = ({route}) => {
   let url: string | undefined;
   url = route.params ? route.params.url : undefined;
+
+  let searchString: string | undefined;
+  searchString = route.params ? route.params.prediction : undefined;
+
   const {products, setProducts, getProducts} = useProducts();
   const [filterValue, setFilteredValue] = useState('');
   const [isHome, setIsHome] = useState(true);
@@ -71,7 +73,8 @@ export const Comparizy: React.FC<ComparizyProps> = ({route}) => {
     filteredProductsCategory,
     setFilteredProductsCategory,
   } = useFilteredProductsByCategory(5);
-  const uri = `https://img.freepik.com/vector-gratis/diseno-cartel-venta-halloween-oferta-70-descuento_1302-24185.jpg`;
+  const uri =
+    'https://img.freepik.com/vector-gratis/diseno-cartel-venta-halloween-oferta-70-descuento_1302-24185.jpg';
 
   const deleteUrl = () => {
     setGeneric(true);
@@ -84,12 +87,18 @@ export const Comparizy: React.FC<ComparizyProps> = ({route}) => {
   }, []);
 
   const loadMore = async () => {
-    if (!reachedBottom && filterValue !== '' && filteredProducts.length > 0 && isGeneric) {
+    if (
+      !reachedBottom &&
+      filterValue !== '' &&
+      filteredProducts.length > 0 &&
+      isGeneric
+    ) {
       await loadFilteredProducts(filterValue, low, high, true);
     }
     if (
       !reachedBottomCategory &&
-      ((filterValue !== '' || filteredProductsCategory.length > 0) && !isGeneric)
+      (filterValue !== '' || filteredProductsCategory.length > 0) &&
+      !isGeneric
     ) {
       await loadFilteredProductsByCategory(filterValue, url!, low, high, true);
     }
@@ -116,20 +125,24 @@ export const Comparizy: React.FC<ComparizyProps> = ({route}) => {
   useEffect(() => {
     (async () => {
       if (authState && authState.notificationProducts.length > 0) {
-        let products = await validateShowNotificationSnackBar(authState.notificationProducts);
+        let products = await validateShowNotificationSnackBar(
+          authState.notificationProducts,
+        );
         if (products.length > 0) {
-          Snackbar && Snackbar.show({
-            text: 'Algunos productos han cambiado de precio',
-            duration: Snackbar.LENGTH_LONG,
-            action: {
-              text: 'VER',
-              textColor: 'orange',
-              onPress: () => navigation.navigate('ProductNotificationScreen', { products }),
-            },
-          });
-          console.log("There Are Products Wiith Price Changes!!");
+          Snackbar &&
+            Snackbar.show({
+              text: 'Algunos productos han cambiado de precio',
+              duration: Snackbar.LENGTH_LONG,
+              action: {
+                text: 'VER',
+                textColor: 'orange',
+                onPress: () =>
+                  navigation.navigate('ProductNotificationScreen', {products}),
+              },
+            });
+          console.log('There Are Products Wiith Price Changes!!');
         } else {
-          console.log("Sad Face");
+          console.log('Sad Face');
         }
       }
     })();
@@ -160,15 +173,18 @@ export const Comparizy: React.FC<ComparizyProps> = ({route}) => {
   );
 
   useEffect(() => {
-    if (filteredProducts.length > 0 && isGeneric) setProducts(filteredProducts);
-    if (filteredProductsCategory.length > 0 && !isGeneric)
+    if (filteredProducts.length > 0 && isGeneric) {
+      setProducts(filteredProducts);
+    }
+    if (filteredProductsCategory.length > 0 && !isGeneric) {
       setProducts(filteredProductsCategory);
+    }
   }, [filteredProducts, filteredProductsCategory]);
 
   return (
     <>
       <View style={{marginHorizontal: 20}}>
-        <SearchBox onPress={filterProducts} />
+        <SearchBox searchText={searchString} onPress={filterProducts} />
         {(url !== undefined || filterValue !== '') && (
           <>
             {isGeneric ? (
@@ -176,7 +192,12 @@ export const Comparizy: React.FC<ComparizyProps> = ({route}) => {
                 Busque por nombre, precio, marca o categoría
               </Text>
             ) : (
-              <View style={{ display:'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
                 <View style={styles.tag}>
                   <Text style={{paddingLeft: 5}}>{url!.split('/').pop()}</Text>
                   <View style={styles.cross}>
@@ -425,11 +446,11 @@ const styles = StyleSheet.create({
   },
   cross: {
     position: 'absolute',
-    display: 'flex',  
+    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     top: 0,
-    left: (screenWidth * 0.35) - 25  ,
+    left: screenWidth * 0.35 - 25,
     zIndex: 999,
     elevation: 14,
   },
@@ -439,5 +460,5 @@ const styles = StyleSheet.create({
     width: screenWidth * 0.35,
     borderRadius: 5,
     padding: 4,
-  }
+  },
 });
