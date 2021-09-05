@@ -5,6 +5,10 @@ import PendingView from './PendingView';
 import {StackScreenProps} from '@react-navigation/stack';
 import {StackNavigationProps} from '../navigation/StackNavigation';
 import {useNavigation} from '@react-navigation/native';
+// import {RNFetchBlob} from 'react-native-fetch-blob';
+// const Buffer = require('buffer/').Buffer;
+//
+// import * as fs from 'react-native-fs';
 
 interface PictureScreenProps
   extends StackScreenProps<
@@ -12,16 +16,39 @@ interface PictureScreenProps
     'ProductDetail'
   > {}
 
-export const PictureScreenFc: React.FC<PictureScreenProps> = ({route}) => {
+export const PictureScreenFc: React.FC<PictureScreenProps> = () => {
   const navigation = useNavigation();
 
   async function takePicture(camera: RNCamera) {
     const options = {quality: 0.5, base64: true};
-    await camera.takePictureAsync(options);
+    const data = await camera.takePictureAsync(options);
 
-    const prediction = 'prediction';
+    // const url = 'https://tf-webapp.herokuapp.com/predict/image';
 
-    navigation.navigate('Comparizy', {prediction});
+    let formData = new FormData();
+    formData.append('file', {
+      uri: data.uri, // your file path string
+      name: 'my_photo.jpg',
+      type: 'image/jpg',
+    });
+
+    fetch('https://tf-webapp.herokuapp.com/predict/image', {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data',
+      },
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(response => {
+        const prediction = response[0].class;
+        navigation.navigate('Comparizy', {prediction});
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
     // const source = data.uri;
     // if (source) {
     //   await camera.pausePreview();
