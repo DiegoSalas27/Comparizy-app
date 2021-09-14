@@ -5,10 +5,6 @@ import PendingView from './PendingView';
 import {StackScreenProps} from '@react-navigation/stack';
 import {StackNavigationProps} from '../navigation/StackNavigation';
 import {useNavigation} from '@react-navigation/native';
-// import {RNFetchBlob} from 'react-native-fetch-blob';
-// const Buffer = require('buffer/').Buffer;
-//
-// import * as fs from 'react-native-fs';
 
 interface PictureScreenProps
   extends StackScreenProps<
@@ -32,7 +28,7 @@ export const PictureScreenFc: React.FC<PictureScreenProps> = () => {
       type: 'image/jpg',
     });
 
-    fetch('https://tf-webapp.herokuapp.com/predict/image', {
+    fetch('http://20.201.57.212:80/predict', {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'multipart/form-data',
@@ -42,19 +38,13 @@ export const PictureScreenFc: React.FC<PictureScreenProps> = () => {
     })
       .then(response => response.json())
       .then(response => {
-        const prediction = response[0].class;
+        const prediction = response.class_name;
+
         navigation.navigate('Comparizy', {prediction});
       })
       .catch(error => {
         console.log(error);
       });
-
-    // const source = data.uri;
-    // if (source) {
-    //   await camera.pausePreview();
-    //   console.log("picture source", source);
-    //   this.setState({ pausePreview:true })
-    // }
   }
 
   return (
