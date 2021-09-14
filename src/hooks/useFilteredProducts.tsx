@@ -145,6 +145,13 @@ export const useFilteredProducts = (limit: number) => {
   const [filteredProducts, setFilteredProducts] = useState<IProduct[]>([]);
   const [reachedBottom, setReachedBottom] = useState<boolean>(false);
 
+  const FilterElements = (word: string, filter: string) => {
+    var word_filters = filter.split(' ');
+    for (let word_filter of word_filters) {
+      if (word.toLowerCase().includes(word_filter.toLowerCase())) return true;
+    }
+  }
+
   const loadFilteredProducts = async (
     filter: string,
     low: number,
@@ -199,9 +206,9 @@ export const useFilteredProducts = (limit: number) => {
 
           if (priceFloat >= low && priceFloat <= high) {
             if (
-              eachP.brand.includes(filter) ||
-              eachP.product_name.includes(filter) ||
-              eachP.sub_category.includes(filter)
+              FilterElements(eachP.brand, filter) ||
+              FilterElements(eachP.product_name, filter) ||
+              FilterElements(eachP.sub_category, filter)
             ) {
               const exists = products.find(
                 prod =>
