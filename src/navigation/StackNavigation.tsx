@@ -1,35 +1,38 @@
-import { createStackNavigator } from '@react-navigation/stack';
-import React, { useContext, useEffect } from 'react';
-import { Button, Image, StyleSheet } from 'react-native';
-import { AuthContext } from '../context/AuthContext';
+import {createStackNavigator} from '@react-navigation/stack';
+import React, {useContext, useEffect} from 'react';
+import {Button, Image, StyleSheet} from 'react-native';
+import {AuthContext} from '../context/AuthContext';
 import withPreventDoubleClick from '../hoc/withPreventDoubleClick';
-import { IProduct } from '../interfaces/product';
-import { Comparizy } from '../screens/HomeScreen';
-import { ProductDetail } from '../screens/ProductDetail';
-import { ProductNotificationScreen } from '../screens/ProductNotificationScreen';
-
+import {IProduct} from '../interfaces/product';
+import {Comparizy} from '../screens/HomeScreen';
+import {ProductDetail} from '../screens/ProductDetail';
+import {ProductNotificationScreen} from '../screens/ProductNotificationScreen';
+import {PictureScreenFc} from '../screens/PictureScreen';
 
 export type StackNavigationProps = {
-  Comparizy: Record<string, { url: string }>;
-  ProductDetail: Record<string, { product: IProduct, deleteNotification?: boolean }>;
-  ProductNotificationScreen: Record<string, { products: IProduct[] }>;
+  Comparizy: Record<string, {url: string; prediction: string}>;
+  ProductDetail: Record<
+    string,
+    {product: IProduct; deleteNotification?: boolean}
+  >;
+  ProductNotificationScreen: Record<string, {products: IProduct[]}>;
 };
 
 const Stack = createStackNavigator();
 
-const ButtonDebounce: any = withPreventDoubleClick(Button)
+const ButtonDebounce: any = withPreventDoubleClick(Button);
 
 export const StackNavigation: React.FC<StackNavigationProps> = ({}) => {
   const {authState, signIn, logout, checkIsLoggedIn} = useContext(AuthContext);
 
   useEffect(() => {
     checkIsLoggedIn(null);
-  }, []);
+  }, [checkIsLoggedIn]);
 
   return (
     <Stack.Navigator
       screenOptions={{
-        title: "Comparizy",
+        title: 'Comparizy',
         headerTitleStyle: {
           textAlign: 'center',
           color: 'orange',
@@ -46,8 +49,18 @@ export const StackNavigation: React.FC<StackNavigationProps> = ({}) => {
           headerRightContainerStyle: {marginRight: 15},
           headerRight: () =>
             !authState.isLoggedIn ? (
-              <ButtonDebounce onPress={signIn} title="Iniciar sesión" color="#0096FF"></ButtonDebounce>
-             ) : (<ButtonDebounce onPress={logout} title="Cerrar sesión" color="#0096FF"></ButtonDebounce>),
+              <ButtonDebounce
+                onPress={signIn}
+                title="Iniciar sesión"
+                color="#0096FF"
+              />
+            ) : (
+              <ButtonDebounce
+                onPress={logout}
+                title="Cerrar sesión"
+                color="#0096FF"
+              />
+            ),
           headerLeftContainerStyle: {marginLeft: 15},
           headerLeft: () => {
             return authState.userImage ? (
@@ -65,8 +78,13 @@ export const StackNavigation: React.FC<StackNavigationProps> = ({}) => {
         }}
         component={Comparizy}
       />
+
+      <Stack.Screen name="PictureScreen" component={PictureScreenFc} />
       <Stack.Screen name="ProductDetail" component={ProductDetail} />
-      <Stack.Screen name="ProductNotificationScreen" component={ProductNotificationScreen} />
+      <Stack.Screen
+        name="ProductNotificationScreen"
+        component={ProductNotificationScreen}
+      />
     </Stack.Navigator>
   );
 };
