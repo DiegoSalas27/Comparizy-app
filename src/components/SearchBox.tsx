@@ -1,5 +1,5 @@
 import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useState} from 'react';
+import React, { useCallback, useEffect, useState } from "react";
 import {StyleSheet, TextInput, View, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -11,13 +11,16 @@ interface SearchBoxProps {
 }
 
 export const SearchBox: React.FC<SearchBoxProps> = ({searchText, onPress}) => {
-  const [search, setSearch] = useState<string>('');
+  const [search, setSearch] = useState<string>();
   const navigation = useNavigation();
+  // if (searchText !== undefined) {
+  //   setSearch(searchText);
+  // }
 
   useFocusEffect(
     useCallback(() => {
-      setSearch('');
-    }, []),
+      setSearch(searchText !== undefined ? searchText : '');
+    }, [searchText]),
   );
 
   const clear = () => {
@@ -33,7 +36,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({searchText, onPress}) => {
       <TextInput
         style={styles.input}
         onChangeText={setSearch}
-        value={searchText === undefined ? search : searchText}
+        value={search}
         placeholder="Buscar Productos"
       />
       <View style={styles.searchIcon}>
