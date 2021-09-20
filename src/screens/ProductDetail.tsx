@@ -1,5 +1,5 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -27,17 +27,18 @@ import {StackNavigationProps} from '../navigation/StackNavigation';
 import {useFocusEffect} from '@react-navigation/native';
 import withPreventDoubleClick from '../hoc/withPreventDoubleClick';
 import {NotLoggedInModal} from '../components/NotLoggedInModal';
-import {ProductItem} from '../components/ProductItem';
 
 const ButtonDebounce: any = withPreventDoubleClick(TouchableOpacity);
 const fs = RNFetchBlob.fs;
 interface ProductDetailProps
-  extends StackScreenProps<StackNavigationProps['ProductDetail'], 'ProductDetail'> {}
+  extends StackScreenProps<
+    StackNavigationProps['ProductDetail'],
+    'ProductDetail'
+  > {}
 
 export const ProductDetail: React.FC<ProductDetailProps> = ({
-                                                              navigation,
                                                               route,
-                                                            }) => {
+}) => {
   const product = route.params.product;
   const deleteNotification = route.params.deleteNotification;
   const [compareProducts, setCompareProducts] = useState<IProduct[]>();
@@ -52,15 +53,22 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
     reachedBottom,
     relatedProducts,
   } = useRelatedProducts(product, 6); // pasar probablemente a servicio
-  const {authState, changeFavoriteProduct, changeNotificaionProduct, deleteNotificationProduct, addVisitedProduct, signIn} =
-    useContext(AuthContext);
+  const {
+    authState,
+    changeFavoriteProduct,
+    changeNotificaionProduct,
+    deleteNotificationProduct,
+    addVisitedProduct,
+    signIn,
+  } = useContext(AuthContext);
 
   useFocusEffect(
     useCallback(() => {
       console.log('focus', product.product_name);
-      deleteNotification && (async () => {
-        await deleteNotificationProduct(product)
-      })();
+      deleteNotification &&
+        (async () => {
+          await deleteNotificationProduct(product);
+        })();
       initializeComponent();
     }, [product]),
   );
@@ -78,7 +86,8 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
     let resp = await loadSameModelOtherStores(product);
     setCompareProducts(resp);
     setProductIsFavorite(await verifyProductIsFavorite(authState, product));
-    !deleteNotification && setProductIsNotified(await verityProductIsNotified(authState, product));
+    !deleteNotification &&
+      setProductIsNotified(await verityProductIsNotified(authState, product));
     setIsLoading(false);
   };
 
@@ -130,8 +139,8 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
           ps.store === 'OE'
             ? 'Oeschle'
             : ps.store === 'RI'
-              ? 'Ripley'
-              : 'Saga Falabella',
+            ? 'Ripley'
+            : 'Saga Falabella',
         precio: ps.product_price,
         enlace: ps.product_detail,
       };
@@ -229,12 +238,15 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
           onPress={async () => {
             await validatePressNotification();
           }}>
-          {!productIsNotified ?(
-            <Icon name="notifications-outline" style={{color: 'black'}} size={30} />
+          {!productIsNotified ? (
+            <Icon
+              name="notifications-outline"
+              style={{color: 'black'}}
+              size={30}
+            />
           ) : (
             <Icon name="notifications" style={{color: '#FFC300'}} size={30} />
           )}
-
         </ButtonDebounce>
       </View>
 
