@@ -36,9 +36,7 @@ interface ProductDetailProps
     'ProductDetail'
   > {}
 
-export const ProductDetail: React.FC<ProductDetailProps> = ({
-                                                              route,
-}) => {
+export const ProductDetail: React.FC<ProductDetailProps> = ({route}) => {
   const product = route.params.product;
   const deleteNotification = route.params.deleteNotification;
   const [compareProducts, setCompareProducts] = useState<IProduct[]>();
@@ -84,6 +82,12 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
     setIsLoading(true);
     authState.isLoggedIn && (await addVisitedProduct(product));
     let resp = await loadSameModelOtherStores(product);
+    resp.sort((a, b) =>
+      parseFloat(a.product_price.replace(',', '.')) >
+      parseFloat(b.product_price.replace(',', '.'))
+        ? 1
+        : -1,
+    );
     setCompareProducts(resp);
     setProductIsFavorite(await verifyProductIsFavorite(authState, product));
     !deleteNotification &&
@@ -281,7 +285,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
         Historial de precios:
       </Text>
       <View style={{marginTop: 15}}>
-        <PriceHistory priceHistory={product.price_history} />
+        {/*<PriceHistory priceHistory={product.price_history} />*/}
       </View>
 
       <Text style={{marginLeft: 5, marginTop: 25, fontWeight: '500'}}>
